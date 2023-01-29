@@ -69,4 +69,23 @@ include('sidebar.php');
 
 <?php
 include('headerfooter/footer.php');
+
 ?>
+
+<script>
+    $(document).ready(function(){
+        $('#name').keyup(function(){
+            const value = $("#name").val();
+            $.ajax({
+                url:"",
+                method:"",
+                dataType:"",
+                data:{'catagoryName': value},
+                success:function(res){
+                    if( res != "success")
+                    console.log(res);
+                }
+            })
+        })
+    })
+    </script>

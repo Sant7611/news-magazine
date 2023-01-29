@@ -17,7 +17,7 @@ class Catagory extends Common
             return false;
         }
     }
-    public function retrive(){
+    public function retrieve(){
 
     }
     public function edit(){
