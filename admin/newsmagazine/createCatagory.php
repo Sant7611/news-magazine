@@ -77,13 +77,17 @@ include('headerfooter/footer.php');
         $('#name').keyup(function(){
             const value = $("#name").val();
             $.ajax({
-                url:"",
-                method:"",
-                dataType:"",
+                url:"checkCatagoryName.php",
+                method:"post",
+                dataType:"text",
                 data:{'catagoryName': value},
                 success:function(res){
-                    if( res != "success")
-                    console.log(res);
+                    if( res != "success"){
+                        $("#catagoryError").text(res);
+                    }else{
+                        $("#catagoryError").text("");
+
+                    }
                 }
             })
         })
