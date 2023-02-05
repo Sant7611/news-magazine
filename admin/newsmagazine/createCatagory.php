@@ -18,10 +18,12 @@ if(isset($_POST['submit'])){
     else{
         $msg= "";
     }
+}else{
+    $ErrMsg = "Category Already Taken!";
 }
 
 include('headerfooter/header.php');
-print_r($catagory);
+// print_r($catagory);
 include('sidebar.php');
 ?>
 <div id="page-wrapper">
@@ -69,7 +71,6 @@ include('sidebar.php');
 
 <?php
 include('headerfooter/footer.php');
-
 ?>
 
 <script>
@@ -86,7 +87,6 @@ include('headerfooter/footer.php');
                         $("#catagoryError").text(res);
                     }else{
                         $("#catagoryError").text("");
-
                     }
                 }
             })

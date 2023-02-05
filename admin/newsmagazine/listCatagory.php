@@ -1,51 +1,73 @@
 <?php
+@session_start();
+
+// print_r($_SESSION);
+// print_r($_COOKIE);
+if (!array_key_exists('username', $_SESSION) && !array_key_exists('username', $_COOKIE)) { {
+        header('location:../index.php');
+    }
+}
 include('headerfooter/header.php');
 include('../class/catagory.class.php');
-$catagoryobject = new Catagory();
-print_r($catagoryobject);
+$catagoryobject = new catagory();
 $datalist = $catagoryobject->retrieve();
+include('sidebar.php');
 ?>
-
-<body>
-    <div id="page-wrapper">
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">List Catagory</h1>
-            </div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">list_catagory</h1>
         </div>
-        <div class="row">
-            <div class="panel-body">
-                <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
-                    <thead>
-                        <tr>
-                            <th>Serial Number </th>
-                            <th>Name</th>
-                            <th>Rank </th>
-                            <th>Status </th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+        <!-- /.col-lg-12 -->
+    </div>
+    <div class="row">
+        <div class="panel-body">
+            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                <thead>
+                    <tr>
+                        <th>serial no</th>
+                        <th>name</th>
+                        <th>rank</th>
+                        <th>status </th>
+                        <th>action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    foreach ($datalist as $key => $catagoryobject) {
+                    ?>
                         <tr class="odd gradeX">
-                            <td>Trident</td>
-                            <td>Internet Explorer 4.0</td>
-                            <td>Win 95+</td>
-                            <td class="center">4</td>
-                            <td class="center">X</td>
+                            <td><?php echo $key + 1; ?></td>
+                            <td> <?php echo $catagoryobject['name']; ?> </td>
+                            <td> <?php echo $catagoryobject['rank']; ?></td>
+                            <td> <?php
+                                    if ($catagoryobject['status'] == 1) {
+                                        echo "<label class='label-success'> Active </label>";
+                                    } else {
+                                        echo "<label class = 'label-danger'> Inactive </label>";
+                                    }
+                                    ?></td>
+                            <td class="center" width="15%">
+                                <a href="editCatagory.php?id=<?php echo $catagoryobject['id']; ?>" class="btn btn-success" role="btn">Edit</a>
+                                <a href="deleteCatagory.php?id=<?php echo $catagoryobject['id']; ?>" class="btn btn-danger" role="btn">Delete</a>
+
+                            </td>
                         </tr>
-                    </tbody>
-                </table>
-                <!-- /.table-responsive -->
-                <div class="well">
-                    <h4>DataTables Usage Information</h4>
-                    <p>DataTables is a very flexible, advanced tables plugin for jQuery. In SB Admin, we are using a specialized version of DataTables built for Bootstrap 3. We have also customized the table headings to use Font Awesome icons in place of images. For complete documentation on DataTables, visit their website at <a target="_blank" href="https://datatables.net/">https://datatables.net/</a>.</p>
-                    <a class="btn btn-default btn-lg btn-block" target="_blank" href="https://datatables.net/">View DataTables Documentation</a>
-                </div>
-            </div>
+                    <?php } ?>
+
+
+                </tbody>
+            </table>
+            <!-- /.table-responsive -->
         </div>
     </div>
 
+    <!-- /.row -->
 
-    <?php
-    include('headerfooter/footer.php');
-    ?>
+</div>
+<!-- /#page-wrapper -->
+
+<!-- /#wrapper -->
+<?php
+require_once('headerfooter/footer.php')
+?>

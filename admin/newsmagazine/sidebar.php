@@ -31,10 +31,10 @@
                             <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> News Management<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="flot.html">Create News</a>
+                                    <a href="createNews.php">Create News</a>
                                 </li>
                                 <li>
-                                    <a href="morris.html">List News</a>
+                                    <a href="listNews.php">List News</a>
                                 </li>
                             </ul>
                             <!-- /.nav-second-level -->
