@@ -1,126 +1,131 @@
 <?php
-@session_start();
-
-include('sidebar.php');
+include('headerfooter/header.php');
+include('headerfooter/footer.php');
 include('../class/catagory.class.php');
 include('../class/news.class.php');
-include('headerfooter/header.php');
-
 
 $catagory = new Catagory();
 $catagoryList = $catagory->retrieve();
-print_r($catagoryList);
 
 $news = new News();
 
-if (isset($_POST['submit'])) {
-    $catagory->set('title', $_POST['title']);
-    $catagory->set('short_detail', $_POST['short_detail']);
-    $catagory->set('detail', $_POST['detail']);
-    $catagory->set('featured', $_POST['featured']);
-    $catagory->set('breaking', $_POST['breaking']);
-    $catagory->set('status', $_POST['status']);
-    $catagory->set('slider_key', $_POST['slider_key']);
-    $catagory->set('catagory_id', $_POST['catagory_id']);
-    $catagory->set('created_by', $_SESSION['id']);
-    $catagory->set('created_date', date('Y-m-d H:i:s'));
 
-    if ($_FILES['image']['name'] == 0) {
-        if (
-            $_FILES['image']['type'] == "image/png" ||
-            $_FILES['image']['type'] == "image/jpg" ||
-            $_FILES['image']['type'] == "image/jpeg"
-        ) {
+@session_start();
+if (isset($_POST['submit'])) {
+
+    $news->set('title', $_POST['title']);
+    $news->set('short_detail', $_POST['short_detail']);
+    $news->set('detail', $_POST['detail']);
+    $news->set('featured', $_POST['featured']);
+    $news->set('breaking', $_POST['breaking']);
+    $news->set('status', $_POST['status']);
+    $news->set('slider_key', $_POST['slider_key']);
+    $news->set('catagory_id', $_POST['catagory_id']);
+    $news->set('created_by', $_SESSION['id']);
+    $news->set('created_date', date('Y-m-d H:i:s'));
+
+    if ($_FILES['image']['error'] == 0) {
+        if ($_FILES['image']['type'] == "image/jpg" || $_FILES['image']['type'] == "image/png" || $_FILES['image']['type'] == "image/jpeg") {
             if ($_FILES['image']['size'] <= 1024 * 1024) {
                 $imageName = uniqid() . $_FILES['image']['name'];
-                move_uploaded_file($_FILES['image']['tmp_name'], 
-                '../images/' . $imageName);
+                move_uploaded_file($_FILES['image']['tmp_name'], '../images/' . $imageName);
                 $news->set('image', $imageName);
-            }else{
-                $imageError = "Error, Exceeded 1mb";
+            } else {
+                $imageError = "Error, Exceeded 1Mb!";
             }
-        }else{
+        } else {
             $imageError = "Invalid Image!";
         }
     }
-
+    $result = $news->save();
     if (is_integer($result)) {
-        $msg = "Catagory inserted successfully with id " . $result;
+        $ErrMs = "";
+        $msg = "News inserted saved Successfully with id " . $result;
     } else {
         $msg = "";
     }
-} else {
-    $ErrMsg = "Category Already Taken!";
 }
+include('sideBar.php');
 
 ?>
 <div id="page-wrapper">
     <div class="row">
         <div class="col-lg-12">
-            <!-- col-sl/lg/-6 bootstrap -->
             <h1 class="page-header">Create News</h1>
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-12">
             <?php if (isset($msg)) { ?>
-                <div class="alert alert-success"> <?php echo $msg; ?> </div>
-            <?php } ?>
-            <form role="form" id="submitForm" method="post" novalidate>
+                <div class="alert alert-success"><?php echo $msg;  ?></div>
+            <?php  } ?>
+            <?php if (isset($ErrMsg)) { ?>
+                <div class="alert alert-danger"><?php echo $ErrMsg;  ?></div>
+            <?php  } ?>
+            <form role="form" id="submitForm" method="post" enctype="multipart/form-data" noValidate>
                 <div class="form-group">
                     <label>Title</label>
-                    <input class="form-control" name="title" type="text" required>
+                    <input type="text" class="form-control" name="title" id="title" required>
+                    <!-- <input type="hidden" name="catagoryEntry" id="catagoryEntry"> -->
+                    <!-- <span id="catagoryError" style="color:red"></span> -->
                 </div>
                 <div class="form-group">
                     <label>News catagory</label>
                     <select class="form-control" name="catagory_id" required>
-                        <option>Select catagory</option>
-                        <?php foreach ($catagoryList as $catagory) { ?>
-                            <option value="<?php echo $catagory['id']; ?>"> <?php echo $catagory['name']; ?> </option>
-                        <?php } ?>
+                        <option vlaue="">Select catagory</option>
+
+                        <?php
+                        foreach ($catagoryList as $catagory) { ?>
+                            <option value="<?php echo $catagory['id']; ?>">
+                                <?php echo $catagory['name']; ?></option>
+
+                        <?php
+                        }
+                        ?>
+
                     </select>
                 </div>
-
                 <div class="form-group">
-                    <label>Short detail</label>
-                    <textarea class="form-control" name="short_detail" rows="3"></textarea>
+                    <label>Short Detail</label>
+                    <textarea class="form-control" rows="3" name="short_detail" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label> detail</label>
-                    <textarea class="form-control ckeditor" name=" detail" rows="3"></textarea>
+                    <label>Detail</label>
+                    <textarea class="form-control ckeditor" rows="3" name="detail"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Image</label>
                     <input type="file" name="image" required>
                 </div>
+
                 <div class="form-group">
                     <label>Featured News</label>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="feature_news" id="optionsRadios1" value="1" checked>Yes
+                            <input type="radio" name="featured" id="optionsRadios1" value="1" checked>Yes
                         </label>
                     </div>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="status" id="optionsRadios2" value="0">No
+                            <input type="radio" name="featured" id="optionsRadios2" value="0">No
                         </label>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Breaking news</label>
+                    <label>Breaking News</label>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="breaking_news" id="optionsRadios1" value="1" checked>Yes
+                            <input type="radio" name="breaking" id="optionsRadios1" value="1" checked>Yes
                         </label>
                     </div>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="status" id="optionsRadios2" value="0">No
+                            <input type="radio" name="breaking" id="optionsRadios2" value="0">No
                         </label>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Slider key</label>
+                    <label>Slider Key</label>
                     <div class="radio">
                         <label>
                             <input type="radio" name="slider_key" id="optionsRadios1" value="1" checked>Yes
@@ -128,35 +133,31 @@ if (isset($_POST['submit'])) {
                     </div>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="status" id="optionsRadios2" value="0">No
+                            <input type="radio" name="slider_key" id="optionsRadios2" value="0">No
                         </label>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label>Status</label>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="status" id="optionsRadios1" value="1" checked>Active
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="status" id="optionsRadios2" value="0">Inactive
-                        </label>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-success" name="submit">Submit Button</button>
-                <button type="reset" class="btn btn-danger">Reset Button</button>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="status" id="optionsRadios1" value="1" checked>Active
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="status" id="optionsRadios2" value="0">Inactive
+                        </div>
+                        <button type="submit" class="btn btn-success" name="submit">Submit Button</button>
+                        <button type="reset" class="btn btn-danger">Reset Button</button>
             </form>
         </div>
     </div>
+
 </div>
 
 <?php
 include('headerfooter/footer.php');
 ?>
-
-<script src="../js/ckeditor/ckeditor.js"></script>
 
 <script>
     $(document).ready(function() {

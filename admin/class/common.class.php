@@ -10,7 +10,13 @@ abstract class Common
 
     public function set($key, $value)
     {
-        $this->$key = $value;
+        $this->$key =$this->validate($value);
+    }
+    public function validate($value){
+        $val = htmlspecialchars($value);
+        $conn = mysqli_connect('localhost', 'root', '', 'news_magazine');
+        $newValue = $conn->real_escape_string($val);
+        return $newValue ;
     }
 }
 ?>

@@ -7,10 +7,14 @@ if (!array_key_exists('username', $_SESSION) && !array_key_exists('username', $_
         header('location:../index.php');
     }
 }
+
 include('headerfooter/header.php');
 include('../class/catagory.class.php');
-$catagoryobject = new catagory();
-$datalist = $catagoryobject->retrieve();
+include('../class/news.class.php');
+// $newsobject = new catagory();
+
+$newsobject = new News();
+$datalist = $newsobject->retrieve();
 include('sidebar.php');
 ?>
 <div id="page-wrapper">
@@ -25,32 +29,53 @@ include('sidebar.php');
             <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                 <thead>
                     <tr>
-                        <th>serial no</th>
-                        <th>name</th>
-                        <th>rank</th>
+                        <th>S. No</th>
+                        <th>title</th>
+                        <th>short detail</th>
+                        <th>Image</th>
+                        <th>featured</th>
+                        <th>breaking</th>
                         <th>status </th>
                         <th>action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                    foreach ($datalist as $key => $catagoryobject) {
+                    foreach ($datalist as $key => $news) {
                     ?>
                         <tr class="odd gradeX">
                             <td><?php echo $key + 1; ?></td>
-                            <td> <?php echo $catagoryobject['name']; ?> </td>
-                            <td> <?php echo $catagoryobject['rank']; ?></td>
+                            <td> <?php echo $news['title']; ?> </td>
+                            <td> <?php echo $news['short_detail']; ?></td>
+                            <td> <img height="100px" width="100px" src="../images/<?php echo $news['image']; ?> "></td>
                             <td> <?php
-                                    if ($catagoryobject['status'] == 1) {
+                                    if ($news['breaking'] == 1) {
                                         echo "<label class='label-success'> Active </label>";
                                     } else {
                                         echo "<label class = 'label-danger'> Inactive </label>";
                                     }
-                                    ?></td>
-                            <td class="center" width="15%">
-                                <a href="editCatagory.php?id=<?php echo $catagoryobject['id']; ?>" class="btn btn-success" role="btn">Edit</a>
-                                <a href="deleteCatagory.php?id=<?php echo $catagoryobject['id']; ?>" class="btn btn-danger" role="btn">Delete</a>
+                                    ?>
+                            </td>
+                            <td> <?php
+                                    if ($news['featured'] == 1) {
+                                        echo "<label class='label-success'> Active </label>";
+                                    } else {
+                                        echo "<label class = 'label-danger'> Inactive </label>";
+                                    }
+                                    ?>
+                            </td>
 
+                            <td> <?php
+                                    if ($news['status'] == 1) {
+                                        echo "<label class='label-success'> Active </label>";
+                                    } else {
+                                        echo "<label class = 'label-danger'> Inactive </label>";
+                                    }
+                                    ?>
+                            </td>
+                            <td class="center" width="15%">
+                                <a href="editNews.php?id=<?php echo $newsobject['id']; ?>" class="btn btn-success" role="btn">Edit</a>
+                                <a href="deleteNews.php?id=<?php echo $newsobject['id']; ?>" class="btn btn-danger" role="btn">Delete</a>
                             </td>
                         </tr>
                     <?php } ?>
