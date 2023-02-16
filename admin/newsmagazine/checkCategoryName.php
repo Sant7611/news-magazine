@@ -1,15 +1,16 @@
 <?php
-$catagoryName = $_POST['catagoryName'];
 
-$con = mysqli_connect('localhost', 'root', '','news_magazine');
-$sql = "select * from catagory where name = '$catagoryName' limit 1";
+$categoryName = $_POST['categoryName'];
 
-$var = $con->query($sql);
+$conn = mysqli_connect('localhost', 'root', '', 'newsmagazine');
+$sql = "select * from category where name='$categoryName' limit 1";
 
-if($var){
-    echo"Already taken";
+$var = $conn->query($sql);
+
+if($var->num_rows > 0){
+    echo "Already taken.";
 }else{
-    echo"success";
+    echo "success";
 }
 
 ?>

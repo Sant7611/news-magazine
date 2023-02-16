@@ -1,40 +1,34 @@
 <?php
 @session_start();
-
-if(array_key_exists('username', $_SESSION) && array_key_exists('username',$_COOKIE)){ 
-    header('location:newsmagazine/dashboard.php');
+if(array_key_exists('username', $_SESSION) && array_key_exists('username', $_COOKIE)){
+   header('location:newsmagazine/dashboard.php');
 }
+ include('class/user.class.php');
 
+ $userObject = new User();
+ $error = [];
 
-include('class/user.class.php');
-$userObject = new User();
-$error = [];
-if (isset($_POST['submit'])) {
-
-
-    if (isset($_POST['email']) && !empty($_POST['email'])) {
-        if (filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-            $userObject->email = $_POST['email'];
-        } else {
-            $error['email'] = "Invalid Email Format";
-        }
-    } else {
-        $  $error['email']  = 'Please Enter your email !!';
+ if(isset($_POST['submit'])){
+    if(isset($_POST['email']) && !empty($_POST['email'])){
+        $userObject->email = $_POST['email'];
+    }else{
+        $error['email'] = "Enter Email";
     }
-    if (isset($_POST['password']) && !empty($_POST['password'])) {
+    if(isset($_POST['password']) && !empty($_POST['password'])){
         $userObject->password = $_POST['password'];
-    } else {
-        $error['password'] = 'Please Enter your password !!';
+    }else{
+        $error['password'] = "Enter password";
     }
-    if (count($error) < 1) {
-        // print_r($userObject);
-        $status = $userObject->login();
-    }
-}
 
+    if(count($error) < 1){
+       $status =  $userObject->login();
+    }
+
+
+ }
+ 
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -46,7 +40,7 @@ if (isset($_POST['submit'])) {
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title> Admin panel</title>
+    <title>Admin Panel</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -66,11 +60,13 @@ if (isset($_POST['submit'])) {
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+
     <style>
-        label.error {
-            color: red;
+        label.error{
+            color:red;
         }
     </style>
+
 </head>
 
 <body>
@@ -83,20 +79,18 @@ if (isset($_POST['submit'])) {
                         <h3 class="panel-title">Please Sign In</h3>
                     </div>
                     <div class="panel-body">
-                        <?php if (isset($status)) {
-                            echo "<small style = 'color: red'> $status  <small/>";
-                        } 
+                       <?php
+                           if(isset($status)){
+                            echo "<div class='alert alert-danger'>$status</div>";
+                           }
                         ?>
-                        <form role="form" id="loginForm" method="post" novalidate>
-                            <!-- novalidate removes html validation -->
+                        <form action="" id="loginForm" method="post" noValidate>
                             <fieldset>
                                 <div class="form-group">
-                                    <input class="form-control" placeholder="E-mail" name="email" id="email" type="email" autofocus required>
-                                    <small><?php if(isset($error['email'])){echo $error['email'] ; }?></small>
+                                    <input class="form-control" placeholder="E-mail" name="email" type="email" required>
                                 </div>
                                 <div class="form-group">
-                                    <input class="form-control" placeholder="Password" name="password" id="password" type="password" value="" required>
-                                    <small><?php  if(isset($error['password'])){echo $error['password'] ; }?></small>
+                                    <input class="form-control" placeholder="Password" name="password" type="password" value="" required>
                                 </div>
                                 <div class="checkbox">
                                     <label>
@@ -104,7 +98,7 @@ if (isset($_POST['submit'])) {
                                     </label>
                                 </div>
                                 <!-- Change this to a button or input when using this as a form -->
-                                <input type="submit" name="submit" class="btn btn-lg btn-success btn-block" value="Login">
+                                <input type="submit" name='submit' class="btn btn-lg btn-success btn-block" value="Login">
                             </fieldset>
                         </form>
                     </div>
@@ -115,9 +109,9 @@ if (isset($_POST['submit'])) {
 
     <!-- jQuery -->
     <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="js/JQuery/jquery.validate.min.js"></script>
+    <script src="js/jquery/jquery.validate.min.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function(){ 
             $('#loginForm').validate();
         })
     </script>

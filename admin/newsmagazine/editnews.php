@@ -7,6 +7,8 @@
  $categoryList = $category->retrieve();
 
  $news = new News();
+ $news->set('id', $_GET['id']);
+ $retrieveData = $news->getById();
 
  @session_start();
  if(isset($_POST['submit'])){
@@ -18,28 +20,35 @@
     $news->set('status', $_POST['status']);
     $news->set('slider_key', $_POST['slider_key']);
     $news->set('category_id', $_POST['category_id']);
-    $news->set('created_by',$_SESSION['id']);
-    $news->set('created_date', date('Y-m-d H:i:s'));
-    if($_FILES['image']['error'] == 0){
-        if($_FILES['image']['type'] == "image/png" ||
-           $_FILES['image']['type'] == "image/jpg" || 
-           $_FILES['image']['type'] == "image/jpeg"){
-           if($_FILES['image']['size'] <= 1024 *1024){
-               $imageName = uniqid().$_FILES['image']['name'];
-               move_uploaded_file($_FILES['image']['tmp_name'],
-                '../images/'.$imageName);
-               $news->set('image', $imageName);
-           }else{
-            $imageError ="Error, Exceeded 1mb!";
-           }
-        }else{
-            $imageError = "Invalid Image!";
+    $news->set('modified_by',$_SESSION['id']);
+    $news->set('modified_date', date('Y-m-d H:i:s'));
+    if(empty($_FILES['image']['name'])){
+        $news->set('image',$_POST['old_image']);
+    }else{
+        if($_FILES['image']['error'] == 0){
+            if($_FILES['image']['type'] == "image/png" ||
+               $_FILES['image']['type'] == "image/jpg" || 
+               $_FILES['image']['type'] == "image/jpeg"){
+               if($_FILES['image']['size'] <= 1024 *1024){
+                   $imageName = uniqid().$_FILES['image']['name'];
+                   move_uploaded_file($_FILES['image']['tmp_name'],
+                    '../images/'.$imageName);
+                   $news->set('image', $imageName);
+               }else{
+                $imageError ="Error, Exceeded 1mb!";
+               }
+            }else{
+                $imageError = "Invalid Image!";
+            }
         }
     }
-    $result = $news->save();   
-    if(is_integer($result)){
+
+    $result = $news->edit();   
+    if($result){
         $ErrMs= "";
-        $msg = "News inserted Successfully with id ".$result;
+        $news->set('id', $_GET['id']);
+        $retrieveData = $news->getById();
+        $msg = "News updated Successfully with id ".$result;
     }else{
         $msg = ""; 
     }
@@ -50,7 +59,7 @@
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">Create News</h1>
+                    <h1 class="page-header">Edit News</h1>
                 </div>
             </div>
             <div class="row">
@@ -64,14 +73,15 @@
                     <form role="form" id="submitForm" method="post" enctype="multipart/form-data" noValidate>
                         <div class="form-group">
                             <label>Title</label>
-                            <input type="text" class="form-control" name="title" id="title" required>
+                            <input type="text" class="form-control" name="title" id="title" value="<?php echo $retrieveData->title;  ?>" required>
                         </div>
                         <div class="form-group">
                             <label>News Category</label>
                             <select class="form-control" name="category_id" required>
                                 <option value="">Select Category</option>
                                 <?php foreach($categoryList as $category) {  ?>
-                                   <option value="<?php echo $category['id'];  ?>">
+                                   <option value="<?php echo $category['id'];  ?>" 
+                                       <?php  if($retrieveData->category_id == $category['id']) { echo "selected"; }  ?>>
                                          <?php echo $category['name'];  ?>
                                    </option>
                                 <?php  } ?>
@@ -79,26 +89,28 @@
                         </div>
                         <div class="form-group">
                             <label>Short Detail</label>
-                            <textarea class="form-control" rows="3" name="short_detail" required></textarea>
+                            <textarea class="form-control" rows="3" name="short_detail" required><?php echo $retrieveData->short_detail;  ?></textarea>
                         </div>
                         <div class="form-group">
                             <label>Detail</label>
-                            <textarea class="form-control ckeditor" rows="3" name="detail"></textarea>
+                            <textarea class="form-control ckeditor" rows="3" name="detail" ><?php echo $retrieveData->detail;  ?></textarea>
                         </div>
                         <div class="form-group" enctype="multipart/form-data">
-                            <label>Image</label>
-                            <input type="file" name="image" required>
+                            <label>Image</label><br>
+                            <input type="hidden" value="<?php echo $retrieveData->image;  ?>" name="old_image">
+                            <img src="../images/<?php echo $retrieveData->image;  ?>" height="100" width="200" alt="" srcset=""><br>
+                            <br><input type="file" name="image">
                         </div>
                         <div class="form-group">
                             <label>Featured News</label>
                             <div class="radio">
                                 <label>
-                                    <input type="radio" name="featured" id="optionsRadios1" value="1" checked>Yes
+                                    <input type="radio" name="featured" id="optionsRadios1" value="1" <?php if($retrieveData->featured == 1) { echo "checked"; }  ?>>Yes
                                 </label>
                             </div>
                             <div class="radio">
                                 <label>
-                                    <input type="radio" name="featured" id="optionsRadios2" value="0">No
+                                    <input type="radio" name="featured" id="optionsRadios2" value="0" <?php if($retrieveData->featured != 1) { echo "checked"; }  ?>>No
                                 </label>
                             </div>
                         </div>
@@ -106,12 +118,12 @@
                             <label>Breaking News</label>
                             <div class="radio">
                                 <label>
-                                    <input type="radio" name="breaking" id="optionsRadios1" value="1" checked>Yes
+                                    <input type="radio" name="breaking" id="optionsRadios1" value="1" <?php if($retrieveData->breaking == 1) { echo "checked"; }  ?>>Yes
                                 </label>
                             </div>
                             <div class="radio">
                                 <label>
-                                    <input type="radio" name="breaking" id="optionsRadios2" value="0">No
+                                    <input type="radio" name="breaking" id="optionsRadios2" value="0" <?php if($retrieveData->breaking != 1) { echo "checked"; }  ?>>No
                                 </label>
                             </div>
                         </div> 
@@ -119,12 +131,12 @@
                             <label>Slider Key</label>
                             <div class="radio">
                                 <label>
-                                    <input type="radio" name="slider_key" id="optionsRadios1" value="1" checked>Yes
+                                    <input type="radio" name="slider_key" id="optionsRadios1" value="1" <?php if($retrieveData->slider_key == 1) { echo "checked"; }  ?>>Yes
                                 </label>
                             </div>
                             <div class="radio">
                                 <label>
-                                    <input type="radio" name="slider_key" id="optionsRadios2" value="0">No
+                                    <input type="radio" name="slider_key" id="optionsRadios2" value="0" <?php if($retrieveData->slider_key != 1) { echo "checked"; }  ?>>No
                                 </label>
                             </div>
                         </div>
@@ -132,12 +144,12 @@
                             <label>Status</label>
                             <div class="radio">
                                 <label>
-                                    <input type="radio" name="status" id="optionsRadios1" value="1" checked>Active
+                                    <input type="radio" name="status" id="optionsRadios1" value="1" <?php if($retrieveData->status == 1) { echo "checked"; }  ?>>Active
                                 </label>
                             </div>
                             <div class="radio">
                                 <label>
-                                    <input type="radio" name="status" id="optionsRadios2" value="0">Inactive
+                                    <input type="radio" name="status" id="optionsRadios2" value="0" <?php if($retrieveData->status != 1) { echo "checked"; }  ?>>Inactive
                                 </label>
                             </div>
                         </div>

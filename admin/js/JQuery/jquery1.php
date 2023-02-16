@@ -5,39 +5,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jquery First</title>
-    <script src="jquery-3.6.1.js"></script>
+    <script src="jquery.min.js"></script>
     <script>
-         $(document).ready(function(){
-            alert('santosh fuchay');
-            $('p').css({color: 'red'})
-            // $('#hide').click(function(){
-            //     $('p').hide();
-            // })
+        $(document).ready(function(){
+            $('p').css({color:'red'})
 
-
-            // $('#show').click(function(){
-            //     $('p').show();
-            // })
             $('#hide').click(function(){
-                $('form').hide();
+                $('p').hide();
             })
-            
+            $('#show').click(function(){
+                $('p').show();
+            })
         })
     </script>
-    
 </head>
 <body>
-<form action="" method="post" name="loginForm" onsubmit="checkLogin()" id="for">
-        <label>Username:</label>
-        <input type="text" name="username" id="username"><br>
-        <br>
-        <label>Password:</label>
-        <input type="password" name="password" id="password"><br>
-        <br>
-        <input type="submit" name="submit">
-    </form>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea sit saepe dignissimos?</p>
-    <input type="button" value="show" id="show">
-    <input type="button" value="hide" id="hide">
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis labore rerum atque fugiat. Mollitia accusantium voluptatem perspiciatis ipsam consequatur vero non modi impedit maxime sapiente cum cupiditate, beatae, ullam repellendus.</p>
+    <input type="button" value="show" id='show'>
+    <input type="button" value="hide" id='hide'>
 </body>
 </html>
